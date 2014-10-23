@@ -7,6 +7,7 @@ import cz.fit.dpo.mvcshooter.model.entities.Missile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,8 +27,8 @@ public class Model {
     private int score = 0;
   
     public Model() {
+    	initDefaultObjects();
         initTimer();
-        initDefaultObjects();
     }
 
     // ####################### model controlling #########################
@@ -77,6 +78,83 @@ public class Model {
     // ################################## private logic ##################################
     private void moveObjects() {
         // todo implement
+    	generateEnemies();
+    	shoot();
+    	shoot();
+    	printMissiles();
+    	printEnemies();
+    	moveMissiles();
+    	printMissiles();
+    	discardMissiles();
+    	handleCollisions();
+    	notifyObservers();
+    }
+    
+    // Checks if we have enough enemies on the playground
+    private boolean enoughEnemies() {
+    	if (enemies.size() < ModelConfig.ENEMIES_COUNT)
+			return false;
+    	
+    	return true;
+    }
+    
+    // Generates new enemies
+    private void generateEnemies() {
+    	while (enemies.size() < ModelConfig.ENEMIES_COUNT) {
+    		Random rand = new Random();
+    		enemies.add(new Enemy(
+    				rand.nextInt(ModelConfig.PLAYGROUND_WIDTH),
+    				rand.nextInt(ModelConfig.PLAYGROUND_HEIGHT)
+    				));
+		}
+    }
+    
+    // Moves missiles
+    private void moveMissiles() {
+    	for (Missile missile : missiles) {
+			missile.move(gravity, cannon.getForce(), cannon.getAngle());
+		}
+    }
+    
+    // Discard missiles out of range
+    private void discardMissiles() {
+    	for (int i=0; i < missiles.size(); i++) {
+			if (missiles.get(i).getX() >= ModelConfig.PLAYGROUND_WIDTH || 
+					missiles.get(i).getY()  >= ModelConfig.PLAYGROUND_HEIGHT) {
+				missiles.remove(i);
+				System.out.println("Deleting missile...");
+			}
+		}
+    }
+    
+    private void handleCollisions() {
+    	for (Missile missile : missiles) {
+			for (Enemy enemy : enemies) {
+				if (missile.collidesWith(enemy)) {
+					enemies.remove(enemy);
+					missiles.remove(missile);
+					// TODO create Collision
+				}
+					
+			}
+		}
+    }
+    
+    private void shoot() {
+    	Missile missile = new Missile(cannon.getX(), cannon.getY());
+    	missiles.add(missile);
+    }
+    
+    private void printEnemies() {
+    	for (Enemy enemy : enemies) {
+			System.out.println(enemy.toString());
+		}
+    }
+    
+    private void printMissiles() {
+    	for (Missile missile : missiles) {
+			System.out.println(missile.toString());
+		}
     }
     
     private void notifyObservers() {

@@ -23,11 +23,11 @@ public class GraphicsDrawer {
 
     public GraphicsDrawer() {
         try {
-            cannonImage = ImageIO.read(getClass().getResourceAsStream("/images/cannon.png"));
-            enemyImage1 = ImageIO.read(getClass().getResourceAsStream("/images/enemy1.png"));
-            enemyImage2 = ImageIO.read(getClass().getResourceAsStream("/images/enemy2.png"));
-            missileImage = ImageIO.read(getClass().getResourceAsStream("/images/missile.png"));
-            collisionImage = ImageIO.read(getClass().getResourceAsStream("/images/collision.png"));
+            cannonImage = ImageIO.read(getClass().getResourceAsStream("src/resources/images/cannon.png"));
+            enemyImage1 = ImageIO.read(getClass().getResourceAsStream("src/resources/images/enemy1.png"));
+            enemyImage2 = ImageIO.read(getClass().getResourceAsStream("src/resources/images/enemy2.png"));
+            missileImage = ImageIO.read(getClass().getResourceAsStream("src/resources/images/missile.png"));
+            collisionImage = ImageIO.read(getClass().getResourceAsStream("src/resources/images/collision.png"));
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
         }
