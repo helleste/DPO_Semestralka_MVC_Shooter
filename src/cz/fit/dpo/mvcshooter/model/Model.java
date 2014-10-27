@@ -29,6 +29,7 @@ public class Model {
     public Model() {
     	initDefaultObjects();
         initTimer();
+        shoot();
     }
 
     // ####################### model controlling #########################
@@ -79,8 +80,6 @@ public class Model {
     private void moveObjects() {
         // todo implement
     	generateEnemies();
-    	shoot();
-    	shoot();
     	printMissiles();
     	printEnemies();
     	moveMissiles();
@@ -127,13 +126,15 @@ public class Model {
 		}
     }
     
+    // Remove enemy, missile and create collision instead
     private void handleCollisions() {
     	for (Missile missile : missiles) {
 			for (Enemy enemy : enemies) {
 				if (missile.collidesWith(enemy)) {
+					Collision collision = new Collision(enemy.getX(), enemy.getY()); // Create collision on the coordinates of the hit enemy
+					collisions.add(collision);
 					enemies.remove(enemy);
 					missiles.remove(missile);
-					// TODO create Collision
 				}
 					
 			}
