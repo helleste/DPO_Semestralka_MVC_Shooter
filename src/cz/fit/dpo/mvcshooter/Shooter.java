@@ -15,12 +15,12 @@ public class Shooter {
         final Model model = new Model();
         final Controller controller = new Controller(model);
         
-        /*SwingUtilities.invokeLater(new Runnable(){
+        SwingUtilities.invokeLater(new Runnable(){
 
             @Override
             public void run() {
                new MainWindow(model, controller).setVisible(true);
             }
-        });*/
+        });
     }
 }

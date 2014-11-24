@@ -6,7 +6,7 @@ import cz.fit.dpo.mvcshooter.model.ModelConfig;
  *
  * @author Ondrej Stuchlik
  */
-public abstract class GameObject {
+public abstract class GameObject implements Visitable {
     protected int x,y;
 
     public GameObject(int x, int y) {

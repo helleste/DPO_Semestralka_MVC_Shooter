@@ -1,6 +1,8 @@
 package cz.fit.dpo.mvcshooter.model.entities;
 
 import cz.fit.dpo.mvcshooter.model.ModelConfig;
+import cz.fit.dpo.mvcshooter.view.Visitor;
+import java.awt.Graphics;
 
 /**
  *
@@ -42,5 +44,9 @@ public class Cannon extends GameObject {
             y +=  ModelConfig.CANNON_MOVE_STEP;
         }
     }
+
+	public void accept(Graphics g, Visitor visitor) {
+		visitor.visit(g, this);
+	}
     
 }

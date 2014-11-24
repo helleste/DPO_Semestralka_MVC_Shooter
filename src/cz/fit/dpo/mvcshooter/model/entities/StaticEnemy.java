@@ -4,9 +4,9 @@ import java.awt.Graphics;
 
 import cz.fit.dpo.mvcshooter.view.Visitor;
 
-public class Collision extends GameObject {
+public class StaticEnemy extends Enemy {
 
-	public Collision(int x, int y) {
+	public StaticEnemy(int x, int y) {
 		super(x, y);
 		// TODO Auto-generated constructor stub
 	}

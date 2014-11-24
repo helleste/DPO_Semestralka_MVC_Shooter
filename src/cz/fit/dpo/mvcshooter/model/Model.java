@@ -3,7 +3,14 @@ package cz.fit.dpo.mvcshooter.model;
 import cz.fit.dpo.mvcshooter.model.entities.Cannon;
 import cz.fit.dpo.mvcshooter.model.entities.Collision;
 import cz.fit.dpo.mvcshooter.model.entities.Enemy;
+import cz.fit.dpo.mvcshooter.model.entities.EntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.entities.GameObject;
 import cz.fit.dpo.mvcshooter.model.entities.Missile;
+import cz.fit.dpo.mvcshooter.model.entities.MovementStrategy;
+import cz.fit.dpo.mvcshooter.model.entities.RealisticStrategy;
+import cz.fit.dpo.mvcshooter.model.entities.SimpleEntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.entities.SimpleStrategy;
+import cz.fit.dpo.mvcshooter.model.entities.StaticEnemy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +25,12 @@ import java.util.TimerTask;
 public class Model {
 
     private Cannon cannon;
+    private List<GameObject> gameObjects = new ArrayList();
     private List<Missile> missiles = new ArrayList();
     private List<Enemy> enemies = new ArrayList();
     private List<Collision> collisions = new ArrayList();
     private List<ModelObserver> observers = new ArrayList();
     private Timer timer;
-    private int gravity = ModelConfig.DEFAULT_GRAVITY;
     private int score = 0;
   
     public Model() {
@@ -81,7 +88,7 @@ public class Model {
         // todo implement
     	generateEnemies();
     	printMissiles();
-    	printEnemies();
+    	//printEnemies();
     	moveMissiles();
     	printMissiles();
     	discardMissiles();
@@ -99,19 +106,21 @@ public class Model {
     
     // Generates new enemies
     private void generateEnemies() {
+    	EntitiesFactory simpleEntitiesFactory = new SimpleEntitiesFactory();
+    	
     	while (enemies.size() < ModelConfig.ENEMIES_COUNT) {
     		Random rand = new Random();
-    		enemies.add(new Enemy(
-    				rand.nextInt(ModelConfig.PLAYGROUND_WIDTH),
-    				rand.nextInt(ModelConfig.PLAYGROUND_HEIGHT)
-    				));
+    		Enemy staticEnemy = simpleEntitiesFactory.createEnemy(
+    				rand.nextInt(ModelConfig.PLAYGROUND_WIDTH), 
+    				rand.nextInt(ModelConfig.PLAYGROUND_HEIGHT));
+    		enemies.add(staticEnemy);
 		}
     }
     
     // Moves missiles
     private void moveMissiles() {
     	for (Missile missile : missiles) {
-			missile.move(gravity, cannon.getForce(), cannon.getAngle());
+			missile.move(cannon);
 		}
     }
     
@@ -142,8 +151,9 @@ public class Model {
     }
     
     private void shoot() {
-    	Missile missile = new Missile(cannon.getX(), cannon.getY());
-    	missiles.add(missile);
+    	// Choose a shooting strategy
+    	EntitiesFactory simpleFactory = new SimpleEntitiesFactory();
+    	missiles.add(simpleFactory.createMissile(cannon.getX(), cannon.getY()));
     }
     
     private void printEnemies() {

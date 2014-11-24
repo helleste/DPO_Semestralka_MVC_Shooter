@@ -26,7 +26,7 @@ public class ModelConfig {
     public static final int CANNON_MAX_DOWN_ANGLE = -90;
     public static final int CANNON_AIM_STEP = 10;    
     
-    public static final int CANNON_DEFAULT_FORCE = 50;
+    public static final int CANNON_DEFAULT_FORCE = 50; // default = 50
     public static final int CANNON_MAX_FORCE = 100;
     public static final int CANNON_MIN_FORCE = 1;
     public static final int CANNON_FORCE_STEP = 1;
