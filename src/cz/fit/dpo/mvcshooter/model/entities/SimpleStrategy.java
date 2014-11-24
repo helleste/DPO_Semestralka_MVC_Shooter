@@ -10,10 +10,10 @@ public class SimpleStrategy implements MovementStrategy {
 		// TODO t=currenttimestamp - starttimestamp
 		int gravity = ModelConfig.DEFAULT_GRAVITY;
 		long currentTime = System.currentTimeMillis();
-		long timeDifference = currentTime - missile.startTime;
+		long timeDifference = (currentTime - missile.startTime)/100;
 		missile.x = (int) (cannon.x + cannon.getForce() * timeDifference * Math.cos(cannon.getAngle()));
-		missile.y = (int) (cannon.y + cannon.getForce() * timeDifference *
-				Math.sin(cannon.getAngle()) - (gravity * Math.pow(timeDifference, 2))/2);
+		missile.y = 500 - (int) (cannon.y + (cannon.getForce() * timeDifference *
+				Math.sin(cannon.getAngle())) - (gravity * Math.pow(timeDifference, 2))/2);
 
 	}
 

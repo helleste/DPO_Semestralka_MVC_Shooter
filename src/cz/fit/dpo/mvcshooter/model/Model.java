@@ -36,7 +36,6 @@ public class Model {
     public Model() {
     	initDefaultObjects();
         initTimer();
-        shoot();
     }
 
     // ####################### model controlling #########################
@@ -49,7 +48,14 @@ public class Model {
         cannon.moveDown();
         notifyObservers();
     }
-
+    
+    public void handleShooting() {
+    	// TODO vyber factory dle modu
+    	EntitiesFactory simpleFactory = new SimpleEntitiesFactory();
+    	List<Missile> missiles = cannon.shoot(simpleFactory);
+    	this.missiles.addAll(missiles);
+    	notifyObservers();
+    }
 
     // ####################### getting data and registering #########################
     public void registerObserver(ModelObserver observer) {
@@ -58,7 +64,11 @@ public class Model {
 
     public Cannon getCannon() {
         return cannon;
-    }    
+    }
+    
+    public List<GameObject> getGameObjects() {
+    	return gameObjects;
+    }
 
     public int getPlaygroundWidth() {
         return ModelConfig.PLAYGROUND_WIDTH;
@@ -87,13 +97,20 @@ public class Model {
     private void moveObjects() {
         // todo implement
     	generateEnemies();
-    	printMissiles();
-    	//printEnemies();
+    	initGameObjects();
     	moveMissiles();
     	printMissiles();
     	discardMissiles();
     	handleCollisions();
     	notifyObservers();
+    }
+    
+    private void initGameObjects() {
+    	gameObjects.clear();
+    	gameObjects.add(cannon);
+    	gameObjects.addAll(enemies);
+    	gameObjects.addAll(missiles);
+    	gameObjects.addAll(collisions);
     }
     
     // Checks if we have enough enemies on the playground

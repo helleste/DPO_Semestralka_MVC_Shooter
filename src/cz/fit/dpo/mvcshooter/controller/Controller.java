@@ -29,7 +29,12 @@ public class Controller {
             case KeyEvent.VK_F1:
                 view.showHelp();
                 break;
-        }
+                
+            case KeyEvent.VK_SPACE:
+            	model.handleShooting();
+            	System.out.println("shoot!");
+            	break;
+        }	
     }
 
     public void setView(MainWindow view) {

@@ -4,6 +4,7 @@ import cz.fit.dpo.mvcshooter.model.Model;
 import cz.fit.dpo.mvcshooter.model.ModelObserver;
 import cz.fit.dpo.mvcshooter.model.entities.Cannon;
 import cz.fit.dpo.mvcshooter.model.entities.Enemy;
+import cz.fit.dpo.mvcshooter.model.entities.GameObject;
 import cz.fit.dpo.mvcshooter.model.entities.StaticEnemy;
 
 import java.awt.Color;
@@ -37,10 +38,12 @@ public class Canvas extends JPanel implements ModelObserver {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Cannon cannon = model.getCannon();
-        Enemy enemy = new StaticEnemy(80, 80);
-        cannon.accept(g, drawer);
-        enemy.accept(g, drawer);
+        GameObject gameObject;
+        
+        for (int i = 0; i < model.getGameObjects().size(); i++) {
+        	gameObject = model.getGameObjects().get(i);
+        	gameObject.accept(g, drawer);
+        }
     }
 
     

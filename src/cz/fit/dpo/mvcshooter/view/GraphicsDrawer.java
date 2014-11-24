@@ -52,13 +52,13 @@ public class GraphicsDrawer implements Visitor {
     }
     
     public void visit(Graphics g, Enemy enemy) {
-    	g.drawImage(missileImage, 
+    	g.drawImage(enemyImage1, 
         		enemy.getX() - missileImage.getWidth()/2, 
         		enemy.getY() - missileImage.getHeight()/2, null);
     }
     
     public void visit(Graphics g, Collision collision) {        
-    	g.drawImage(missileImage, 
+    	g.drawImage(collisionImage, 
         		collision.getX() - missileImage.getWidth()/2, 
         		collision.getY() - missileImage.getHeight()/2, null);
     }
