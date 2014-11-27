@@ -3,23 +3,29 @@ package cz.fit.dpo.mvcshooter.model.entities;
 import java.awt.Graphics;
 
 import cz.fit.dpo.mvcshooter.model.ModelConfig;
+import cz.fit.dpo.mvcshooter.model.strategies.MovementStrategy;
 import cz.fit.dpo.mvcshooter.view.Visitor;
 
 public class Missile extends GameObject {
 	
 	public long startTime;
 	private MovementStrategy strategy;
+	private int dispersion;
 
 	public Missile(int x, int y) {
 		super(x, y);
 		startTime = System.currentTimeMillis();
-		// TODO Auto-generated constructor stub
 	}
 	
-	public Missile(int x, int y, MovementStrategy strategy) {
+	public Missile(int x, int y, MovementStrategy strategy, int dispersion) {
 		super(x, y);
 		this.strategy = strategy;
 		this.startTime = System.currentTimeMillis();
+		this.dispersion = dispersion;
+	}
+	
+	public int getDispersion() {
+		return dispersion;
 	}
 	
 	public void move(Cannon cannon) {
@@ -28,7 +34,7 @@ public class Missile extends GameObject {
 	
 	@Override
 	public String toString() {
-		return "Missile x=" + x + " y=" + y;
+		return "Missile x=" + getX() + " y=" + getY();
 	}
 
 	@Override

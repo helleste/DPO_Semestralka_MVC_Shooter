@@ -8,7 +8,6 @@ public class StaticEnemy extends Enemy {
 
 	public StaticEnemy(int x, int y) {
 		super(x, y);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

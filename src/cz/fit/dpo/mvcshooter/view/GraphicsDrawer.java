@@ -4,6 +4,8 @@ import cz.fit.dpo.mvcshooter.model.entities.Cannon;
 import cz.fit.dpo.mvcshooter.model.entities.Collision;
 import cz.fit.dpo.mvcshooter.model.entities.Enemy;
 import cz.fit.dpo.mvcshooter.model.entities.Missile;
+import cz.fit.dpo.mvcshooter.model.entities.MoustacheEnemy;
+import cz.fit.dpo.mvcshooter.model.entities.StaticEnemy;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -51,8 +53,14 @@ public class GraphicsDrawer implements Visitor {
         		missile.getY() - missileImage.getHeight()/2, null);
     }
     
-    public void visit(Graphics g, Enemy enemy) {
+    public void visit(Graphics g, StaticEnemy enemy) {
     	g.drawImage(enemyImage1, 
+        		enemy.getX() - missileImage.getWidth()/2, 
+        		enemy.getY() - missileImage.getHeight()/2, null);
+    }
+    
+    public void visit(Graphics g, MoustacheEnemy enemy) {
+    	g.drawImage(enemyImage2, 
         		enemy.getX() - missileImage.getWidth()/2, 
         		enemy.getY() - missileImage.getHeight()/2, null);
     }

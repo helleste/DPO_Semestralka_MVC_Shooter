@@ -3,14 +3,15 @@ package cz.fit.dpo.mvcshooter.model;
 import cz.fit.dpo.mvcshooter.model.entities.Cannon;
 import cz.fit.dpo.mvcshooter.model.entities.Collision;
 import cz.fit.dpo.mvcshooter.model.entities.Enemy;
-import cz.fit.dpo.mvcshooter.model.entities.EntitiesFactory;
 import cz.fit.dpo.mvcshooter.model.entities.GameObject;
 import cz.fit.dpo.mvcshooter.model.entities.Missile;
-import cz.fit.dpo.mvcshooter.model.entities.MovementStrategy;
-import cz.fit.dpo.mvcshooter.model.entities.RealisticStrategy;
-import cz.fit.dpo.mvcshooter.model.entities.SimpleEntitiesFactory;
-import cz.fit.dpo.mvcshooter.model.entities.SimpleStrategy;
 import cz.fit.dpo.mvcshooter.model.entities.StaticEnemy;
+import cz.fit.dpo.mvcshooter.model.factories.EntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.factories.RealisticEntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.factories.SimpleEntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.strategies.MovementStrategy;
+import cz.fit.dpo.mvcshooter.model.strategies.RealisticStrategy;
+import cz.fit.dpo.mvcshooter.model.strategies.SimpleStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,10 @@ public class Model {
     	this.missiles.addAll(missiles);
     	notifyObservers();
     }
+    
+    public void switchStates() {
+		cannon.switchShootingState();
+	}
 
     // ####################### getting data and registering #########################
     public void registerObserver(ModelObserver observer) {
@@ -96,6 +101,7 @@ public class Model {
     // ################################## private logic ##################################
     private void moveObjects() {
         // todo implement
+    	//clearCollisions();
     	generateEnemies();
     	initGameObjects();
     	moveMissiles();
@@ -123,7 +129,7 @@ public class Model {
     
     // Generates new enemies
     private void generateEnemies() {
-    	EntitiesFactory simpleEntitiesFactory = new SimpleEntitiesFactory();
+    	EntitiesFactory simpleEntitiesFactory = new RealisticEntitiesFactory();
     	
     	while (enemies.size() < ModelConfig.ENEMIES_COUNT) {
     		Random rand = new Random();
@@ -154,24 +160,27 @@ public class Model {
     
     // Remove enemy, missile and create collision instead
     private void handleCollisions() {
-    	for (Missile missile : missiles) {
-			for (Enemy enemy : enemies) {
-				if (missile.collidesWith(enemy)) {
+    	for (int i = 0; i < missiles.size(); i++) {
+    		Missile missile = missiles.get(i);
+    		for (int j = 0; j < enemies.size(); j++) {
+    			Enemy enemy = enemies.get(j);
+    			if (missile.collidesWith(enemy)) {
 					Collision collision = new Collision(enemy.getX(), enemy.getY()); // Create collision on the coordinates of the hit enemy
 					collisions.add(collision);
 					enemies.remove(enemy);
 					missiles.remove(missile);
+					score++;
+					System.out.println("score: " + score);
 				}
-					
-			}
-		}
+    		}
+    	}
     }
     
-    private void shoot() {
-    	// Choose a shooting strategy
-    	EntitiesFactory simpleFactory = new SimpleEntitiesFactory();
-    	missiles.add(simpleFactory.createMissile(cannon.getX(), cannon.getY()));
+    // Remove collisions
+    private void clearCollisions() {
+    	collisions.clear();
     }
+
     
     private void printEnemies() {
     	for (Enemy enemy : enemies) {
@@ -180,7 +189,8 @@ public class Model {
     }
     
     private void printMissiles() {
-    	for (Missile missile : missiles) {
+    	for (int i = 0; i < missiles.size(); i++) {
+    		Missile missile = missiles.get(i);
 			System.out.println(missile.toString());
 		}
     }
@@ -189,6 +199,45 @@ public class Model {
         for (ModelObserver obs : observers) {
             obs.modelUpdated();
         }
+    }
+    
+    public Memento save() {
+    	return new Memento(this.cannon, this.gameObjects, 
+    			this.missiles, this.enemies, this.collisions, this.observers, this.score);
+    }
+    
+    public void undoToLastSave(Object obj) {
+    	Memento memento = (Memento) obj;
+    	this.cannon = memento.cannon;
+    	this.gameObjects = memento.gameObjects;
+    	this.missiles = memento.missiles;
+    	this.enemies = memento.enemies;
+    	this.collisions = memento.collisions;
+    	this.observers = memento.observers;
+    	this.score = memento.score;
+    }
+    
+    private class Memento {
+    	private int score;
+    	private Cannon cannon;
+        private List<GameObject> gameObjects;
+        private List<Missile> missiles;
+        private List<Enemy> enemies;
+        private List<Collision> collisions;
+        private List<ModelObserver> observers;
+        
+        public Memento(Cannon cannon, List<GameObject> gameObjects, List<Missile> missiles, 
+        		List<Enemy> enemies, List<Collision> collisions, List<ModelObserver> observers, 
+        		int score) {
+        	this.cannon = new Cannon(cannon);
+        	this.gameObjects = new ArrayList<GameObject>(gameObjects);
+        	this.missiles = new ArrayList<Missile>(missiles);
+        	this.enemies = new ArrayList<Enemy>(enemies);
+        	this.collisions = new ArrayList<Collision>(collisions);
+        	this.observers = new ArrayList<ModelObserver>(observers);
+        	this.score = score;
+        }
+    	
     }
 
 }

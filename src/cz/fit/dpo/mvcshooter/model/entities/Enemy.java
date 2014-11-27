@@ -20,7 +20,7 @@ public abstract class Enemy extends GameObject {
 	
 	@Override
 	public String toString() {
-		return "Enemy x=" + x + " y=" +y;
+		return "Enemy x=" + getX() + " y=" +getY();
 	}
 
 }

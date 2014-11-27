@@ -1,6 +1,10 @@
 package cz.fit.dpo.mvcshooter.model.entities;
 
 import cz.fit.dpo.mvcshooter.model.ModelConfig;
+import cz.fit.dpo.mvcshooter.model.factories.EntitiesFactory;
+import cz.fit.dpo.mvcshooter.model.states.DoubleShootingState;
+import cz.fit.dpo.mvcshooter.model.states.ShootingState;
+import cz.fit.dpo.mvcshooter.model.states.SimpleShootingState;
 import cz.fit.dpo.mvcshooter.view.Visitor;
 
 import java.awt.Graphics;
@@ -22,7 +26,12 @@ public class Cannon extends GameObject {
         shootingState = new SimpleShootingState();
     }
     
-    public int getAngle() {
+    public Cannon(Cannon cannon) {
+    	super(cannon.getX(), cannon.getY());
+    	shootingState = cannon.getShootingState();
+	}
+
+	public int getAngle() {
 		return angle;
 	}
 
@@ -37,25 +46,32 @@ public class Cannon extends GameObject {
 	public void setForce(int force) {
 		this.force = force;
 	}
+	
+	public ShootingState getShootingState() {
+		return shootingState;
+	}
    
     public void moveUp() {
-        if (y >= ModelConfig.CANNON_TOP_MARGIN) {
-            y -= ModelConfig.CANNON_MOVE_STEP;
+        if (getY() >= ModelConfig.CANNON_TOP_MARGIN) {
+            setY(getY() - ModelConfig.CANNON_MOVE_STEP);
         }
     }
     
     public void moveDown() {
-        if (y <= ModelConfig.PLAYGROUND_HEIGHT - ModelConfig.CANNON_BOTTOM_MARGIN) {
-            y +=  ModelConfig.CANNON_MOVE_STEP;
+        if (getY() <= ModelConfig.PLAYGROUND_HEIGHT - ModelConfig.CANNON_BOTTOM_MARGIN) {
+            setY(getY() + ModelConfig.CANNON_MOVE_STEP);
         }
     }
     
     public void switchShootingState() {
-    	shootingState = new DoubleShootingState();
+    	if (shootingState instanceof SimpleShootingState)
+    		shootingState = new DoubleShootingState();
+    	else
+    		shootingState = new SimpleShootingState();
     }
     
     public List<Missile> shoot(EntitiesFactory factory) {
-    	return shootingState.shoot(x, y, factory);
+    	return shootingState.shoot(getX(), getY(), factory);
     }
 
 	public void accept(Graphics g, Visitor visitor) {
