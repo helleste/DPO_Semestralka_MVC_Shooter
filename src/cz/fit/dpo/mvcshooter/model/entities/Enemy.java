@@ -18,6 +18,10 @@ public abstract class Enemy extends GameObject {
 		super(x, y);
 	}
 	
+	public Enemy clone(){
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 		return "Enemy x=" + getX() + " y=" +getY();

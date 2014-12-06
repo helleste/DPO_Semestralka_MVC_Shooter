@@ -28,6 +28,10 @@ public class Missile extends GameObject {
 		return dispersion;
 	}
 	
+	public MovementStrategy getStrategy() {
+		return strategy;
+	}
+	
 	public void move(Cannon cannon) {
 		strategy.moveMissile(this, cannon);
 	}

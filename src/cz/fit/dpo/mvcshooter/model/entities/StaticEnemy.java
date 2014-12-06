@@ -8,6 +8,11 @@ public class StaticEnemy extends Enemy {
 
 	public StaticEnemy(int x, int y) {
 		super(x, y);
+	}	
+	
+	@Override
+	public StaticEnemy clone() {
+		return new StaticEnemy(getX(), getY());
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 public class Shooter {
     
     public static void main(String[] args) {
-        final Model model = new Model();
+        final Model model = new Model(args[0]);
         final Controller controller = new Controller(model);
         
         SwingUtilities.invokeLater(new Runnable(){

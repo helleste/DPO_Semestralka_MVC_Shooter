@@ -33,13 +33,23 @@ public class Model {
     private List<ModelObserver> observers = new ArrayList();
     private Timer timer;
     private int score = 0;
-  
-    public Model() {
+    private final String mode;
+
+    public Model(String mode) {
     	initDefaultObjects();
         initTimer();
-    }
+        
+		if (mode.equals("-n")) {
+			this.mode = "NORMAL";
+			System.out.println("Mode set to NORMAL.");
+		}
+		else {
+			this.mode = "REALISTIC";
+			System.out.println("Mode set to REALISTIC.");
+		}
+	}
 
-    // ####################### model controlling #########################
+	// ####################### model controlling #########################
     public void moveCannonUp() {
         cannon.moveUp();
         notifyObservers();
@@ -51,9 +61,14 @@ public class Model {
     }
     
     public void handleShooting() {
-    	// TODO vyber factory dle modu
-    	EntitiesFactory simpleFactory = new SimpleEntitiesFactory();
-    	List<Missile> missiles = cannon.shoot(simpleFactory);
+    	EntitiesFactory entitiesFactory;
+    	
+    	if (mode.equals("NORMAL"))
+    		entitiesFactory = new SimpleEntitiesFactory();
+    	else
+    		entitiesFactory = new RealisticEntitiesFactory();
+    	
+    	List<Missile> missiles = cannon.shoot(entitiesFactory);
     	this.missiles.addAll(missiles);
     	notifyObservers();
     }
@@ -82,6 +97,18 @@ public class Model {
     public int getPlaygroundHeight() {
         return ModelConfig.PLAYGROUND_HEIGHT;
     }
+    
+    public String getMode() {
+    	return mode;
+    }
+    
+    public List<Missile> getMissiles() {
+    	return missiles;
+    }
+    
+    public List<Enemy> getEnemies() {
+    	return enemies;
+    }
 
     // ############################### private initialization ###############################
     private void initTimer() {
@@ -100,14 +127,14 @@ public class Model {
 
     // ################################## private logic ##################################
     private void moveObjects() {
-        // todo implement
-    	//clearCollisions();
     	generateEnemies();
     	initGameObjects();
     	moveMissiles();
     	printMissiles();
     	discardMissiles();
     	handleCollisions();
+    	decreaseCollisionTicks();
+    	clearOldCollisions();
     	notifyObservers();
     }
     
@@ -129,11 +156,16 @@ public class Model {
     
     // Generates new enemies
     private void generateEnemies() {
-    	EntitiesFactory simpleEntitiesFactory = new RealisticEntitiesFactory();
+    	EntitiesFactory entitiesFactory;
+    	
+    	if (mode.equals("NORMAL"))
+    		entitiesFactory = new SimpleEntitiesFactory();
+    	else
+    		entitiesFactory = new RealisticEntitiesFactory();
     	
     	while (enemies.size() < ModelConfig.ENEMIES_COUNT) {
     		Random rand = new Random();
-    		Enemy staticEnemy = simpleEntitiesFactory.createEnemy(
+    		Enemy staticEnemy = entitiesFactory.createEnemy(
     				rand.nextInt(ModelConfig.PLAYGROUND_WIDTH), 
     				rand.nextInt(ModelConfig.PLAYGROUND_HEIGHT));
     		enemies.add(staticEnemy);
@@ -142,14 +174,15 @@ public class Model {
     
     // Moves missiles
     private void moveMissiles() {
-    	for (Missile missile : missiles) {
+    	for (int i = 0; i < missiles.size(); i++) {
+    		Missile missile = missiles.get(i);
 			missile.move(cannon);
 		}
     }
     
     // Discard missiles out of range
     private void discardMissiles() {
-    	for (int i=0; i < missiles.size(); i++) {
+    	for (int i = 0; i < missiles.size(); i++) {
 			if (missiles.get(i).getX() >= ModelConfig.PLAYGROUND_WIDTH || 
 					missiles.get(i).getY()  >= ModelConfig.PLAYGROUND_HEIGHT) {
 				missiles.remove(i);
@@ -176,6 +209,21 @@ public class Model {
     	}
     }
     
+    // Decrease collision ticks
+    private void decreaseCollisionTicks() {
+    	for (int i = 0; i < collisions.size(); i++) {
+    		collisions.get(i).decreaseTicksLeft();
+    	}
+    }
+    
+    // Clear old collisions
+    private void clearOldCollisions() {
+    	for (int i = 0; i < collisions.size(); i++) {
+    		if (collisions.get(i).getTicksLeft() == 0)
+    			collisions.remove(i);
+    	}
+    }
+    
     // Remove collisions
     private void clearCollisions() {
     	collisions.clear();
@@ -186,6 +234,27 @@ public class Model {
     	for (Enemy enemy : enemies) {
 			System.out.println(enemy.toString());
 		}
+    }
+    
+    // Deep copy of collisions
+    private List<Collision> copyCollisions() {
+    	List<Collision> copiedCollisions = new ArrayList<Collision>();
+    	
+    	for (int i = 0; i < collisions.size(); i++)
+    		copiedCollisions.add(collisions.get(i).clone());
+    	
+    	return copiedCollisions;
+    }
+    
+ // Deep copy of enemies
+    private List<Enemy> copyEnemies() {
+    	List<Enemy> copiedEnemies = new ArrayList<Enemy>();
+    	
+    	for (int i = 0; i < enemies.size(); i++) {
+    		copiedEnemies.add(enemies.get(i).clone());
+    	}
+    	
+    	return copiedEnemies;
     }
     
     private void printMissiles() {
@@ -230,10 +299,10 @@ public class Model {
         		List<Enemy> enemies, List<Collision> collisions, List<ModelObserver> observers, 
         		int score) {
         	this.cannon = new Cannon(cannon);
-        	this.gameObjects = new ArrayList<GameObject>(gameObjects);
-        	this.missiles = new ArrayList<Missile>(missiles);
-        	this.enemies = new ArrayList<Enemy>(enemies);
-        	this.collisions = new ArrayList<Collision>(collisions);
+        	this.gameObjects = new ArrayList<GameObject>(); // empty list ok
+        	this.missiles = new ArrayList<Missile>(); // no need to copy missiles
+        	this.enemies = copyEnemies();
+        	this.collisions = copyCollisions();
         	this.observers = new ArrayList<ModelObserver>(observers);
         	this.score = score;
         }

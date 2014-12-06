@@ -30,6 +30,11 @@ public class MoustacheEnemy extends Enemy {
 		Random rand = new Random();
 		return rand.nextInt(ModelConfig.PLAYGROUND_HEIGHT);
 	}
+	
+	@Override
+	public MoustacheEnemy clone() {
+		return new MoustacheEnemy(getX(), getY());
+	}
 
 	@Override
 	public void accept(Graphics g, Visitor visitor) {
